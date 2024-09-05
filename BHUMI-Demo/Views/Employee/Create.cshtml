@@ -31,7 +31,7 @@
 
 <h2>@(isEdit ? "Edit Employee" : "Create Employee")</h2>
 
-@using (Html.BeginForm("Create", "Employee", FormMethod.Post))
+@using (Html.BeginForm("Create", "Employee", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
     @Html.HiddenFor(model => model.Id)
@@ -130,15 +130,18 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         @Html.LabelFor(model => model.PhotoPath)
-                                        @*@if (!string.IsNullOrEmpty(Model.PhotoPath))
+                                        @if (!string.IsNullOrEmpty(Model.PhotoPath))
                                         {
                                             <div>
                                                 <img src="@Url.Content("~/Content/Images/" + Model.PhotoPath)" alt="Employee Photo" id="photoPreview" style="max-width: 200px; max-height: 200px;" />
                                                 <input type="hidden" id="PhotoPath" name="PhotoPath" value="@Model.PhotoPath" />
-                                            </div> }
+                                            </div>
+                                        }
                                         else
                                         {
-                                            <input type="hidden" id="PhotoPath" name="PhotoPath" value="PhotoPath" />}*@
+                                            <img src="" alt="Employee Photo" id="photoPreview" style="max-width: 200px; max-height: 200px; display: none;" />
+                                            <input type="hidden" id="PhotoPath" name="PhotoPath" value="" />
+                                        }
                                         <input type="file" name="Photo" id="photoInput" accept=".png, .jpg, .jpeg" />
                                         <span id="photoError" style="color: red; display: none;">Please select a PNG or JPG file.</span>
                                         @Html.ValidationMessageFor(model => model.PhotoPath)
@@ -244,7 +247,6 @@
             if (existingPhotoPath) {
                 $('#photoPreview').attr('src', '/Content/Images/' + existingPhotoPath);
             }
-
             // Add new education row
             $('#addEducation').click(function () {
                 var educationIndex = $('#educationTable tbody tr').length;
@@ -264,30 +266,42 @@
             });
 
             // Validate unique employee data
-            function validateUniqueData() {
-                var isValid = true;
-                var employeeName = $('#EmployeeName').val();
-                if (employeeName) {
-                    $.ajax({
-                        url: '@Url.Action("CheckEmployeeName", "Employee")',
-                        type: 'POST',
-                        data: { employeeName: employeeName },
-                        async: false,
-                        success: function (response) {
-                            if (response.exists) {
-                                $('#EmployeeName').addClass('is-invalid');
-                                $('#employeeNameError').text('Employee Name already exists.');
-                                isValid = false;
-                            } else {
-                                $('#EmployeeName').removeClass('is-invalid');
-                                $('#employeeNameError').text('');
-                            }
-                        }
-                    });
-                }
+           function validateUniqueData() {
+    var isValid = true;
+    var employeeName = $('#EmployeeName').val();
+    var errorSpan = $('#employeeNameError');
 
-                return true;
+    if (employeeName) {
+        $.ajax({
+            url: '@Url.Action("CheckEmployeeName", "Employee")',
+            type: 'POST',
+            data: { employeeName: employeeName },
+            dataType: 'json',
+            success: function (response) {
+                if (response.exists) {
+                    $('#EmployeeName').addClass('is-invalid');
+                    errorSpan.text('Employee Name already exists.');
+                    isValid = false;
+                } else {
+                    $('#EmployeeName').removeClass('is-invalid');
+                    errorSpan.text('');
+                }
+            },
+            error: function () {
+                // Handle any errors that occur during the AJAX request
+                $('#EmployeeName').addClass('is-invalid');
+                errorSpan.text('An error occurred while checking the Employee Name.');
+                isValid = false;
             }
+        });
+    } else {
+        // Handle empty input
+        $('#EmployeeName').removeClass('is-invalid');
+        errorSpan.text('');
+    }
+
+    return isValid;
+}
 
             // Calculate and display age based on DOB
             $('#dob').change(function () {
@@ -309,73 +323,26 @@
                 startDate: '01-01-1900',
                 endDate: new Date()
             });
-            //$('#photoInput').change(function () {
-            //    var fileInput = this;
-            //    var file = fileInput.files[0];
-            //    var errorSpan = $('#photoError');
-            //    var maxFileSize = 20 * 1024; // 20 KB
-
-            //    if (file) {
-            //        var fileName = file.name.toLowerCase();
-            //        var fileExtension = fileName.split('.').pop();
-            //        var validExtensions = ['png', 'jpg', 'jpeg'];
-
-            //        // Validate file extension
-            //        if (!validExtensions.includes(fileExtension)) {
-            //            errorSpan.text('Please select a PNG or JPG file.');
-            //            errorSpan.show();
-            //            fileInput.value = ''; // Clear invalid file input
-            //            $('#PhotoPath').val(''); // Clear photo path
-            //            $('#photoPreview').attr('src', ''); // Clear photo preview
-            //            return;
-            //        }
-
-            //        // Validate file size
-            //        if (file.size > maxFileSize) {
-            //            errorSpan.text('The file size must be up to 20KB.');
-            //            errorSpan.show();
-            //            fileInput.value = ''; // Clear invalid file input
-            //            $('#PhotoPath').val(''); // Clear photo path
-            //            $('#photoPreview').attr('src', ''); // Clear photo preview
-            //            return;
-            //        }
-
-            //        errorSpan.hide();
-
-            //        // Display photo preview
-            //        var reader = new FileReader();
-            //        reader.onload = function (e) {
-            //            $('#photoPreview').attr('src', e.target.result);
-            //        };
-            //        reader.readAsDataURL(file);
-
-            //        // Set photo path with the file name for form submission
-            //        $('#PhotoPath').val(fileName);
-            //    } else {
-            //        errorSpan.hide();
-            //        $('#photoPreview').attr('src', ''); // Clear photo preview
-            //        $('#PhotoPath').val(''); // Clear photo path
-            //    }
-            //});
 
             $('#photoInput').change(function () {
                 var fileInput = this;
                 var file = fileInput.files[0];
                 var errorSpan = $('#photoError');
+                var photoPreview = $('#photoPreview');
                 var maxFileSize = 20 * 1024; // 20 KB
+                var validExtensions = ['jpg', 'jpeg', 'png'];
 
                 if (file) {
                     var fileName = file.name.toLowerCase();
                     var fileExtension = fileName.split('.').pop();
-                    var validExtensions = ['png', 'jpg', 'jpeg'];
 
                     // Validate file extension
                     if (!validExtensions.includes(fileExtension)) {
-                        errorSpan.text('Please select a PNG or JPG file.');
+                        errorSpan.text('Only JPG and PNG formats are allowed.');
                         errorSpan.show();
                         fileInput.value = ''; // Clear invalid file input
                         $('#PhotoPath').val(''); // Clear photo path
-                        $('#photoPreview').attr('src', existingPhotoPath ? '/Content/Images/' + existingPhotoPath : ''); // Reset to existing photo or blank
+                        photoPreview.hide(); // Hide preview
                         return;
                     }
 
@@ -385,7 +352,7 @@
                         errorSpan.show();
                         fileInput.value = ''; // Clear invalid file input
                         $('#PhotoPath').val(''); // Clear photo path
-                        $('#photoPreview').attr('src', existingPhotoPath ? '/Content/Images/' + existingPhotoPath : ''); // Reset to existing photo or blank
+                        photoPreview.hide(); // Hide preview
                         return;
                     }
 
@@ -394,16 +361,16 @@
                     // Display photo preview
                     var reader = new FileReader();
                     reader.onload = function (e) {
-                        $('#photoPreview').attr('src', e.target.result);
+                        photoPreview.attr('src', e.target.result).show();
                     };
                     reader.readAsDataURL(file);
-                    console.log("file", file)
+
                     // Set photo path with the file name for form submission
                     $('#PhotoPath').val(fileName);
                 } else {
                     errorSpan.hide();
-                    $('#photoPreview').attr('src', existingPhotoPath ? '/Content/Images/' + existingPhotoPath : ''); // Reset to existing photo or blank
-                    $('#PhotoPath').val(existingPhotoPath); // Keep existing photo path
+                    photoPreview.attr('src', '').hide(); // Hide preview
+                    $('#PhotoPath').val(''); // Clear photo path
                 }
             });
             // Form submission validation
@@ -440,7 +407,7 @@
                 else {
                     ShowMessage("success", "Employee Added Successfully!");
                 }
-                
+
             });
         });
     </script>
