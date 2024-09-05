@@ -60,7 +60,7 @@
                                     <div class="form-group">
                                         @Html.LabelFor(model => model.EmployeeName, "Employee Name")
                                         <span style="color: red;">*</span>
-                                        @Html.TextBoxFor(model => model.EmployeeName, new { @class = "form-control", id = "EmployeeName" })
+                                        @Html.TextBoxFor(model => model.EmployeeName, new { @class = "form-control", id = "EmployeeName", onchange = "validateUniqueData()" })
                                         @Html.ValidationMessageFor(model => model.EmployeeName, "", new { @class = "text-danger", id = "employeeNameError" })
                                     </div>
                                 </div>
@@ -286,7 +286,7 @@
                     });
                 }
 
-                return isValid;
+                return true;
             }
 
             // Calculate and display age based on DOB
@@ -410,12 +410,12 @@
             $("form").on("submit", function (event) {
                 var isValid = true;
                 var isEdit = $("#isEdit").val() === "true";
-
                 // Validate unique data if in edit mode
-                if (isEdit && !validateUniqueData()) {
-                    isValid = false;
+                if (!isEdit) {
+                    if (validateUniqueData()) {
+                        isValid = false;
+                    }
                 }
-
                 // Validate ContactNo
                 if ($("#ContactNo").val().trim() === "") {
                     isValid = false;
@@ -437,7 +437,10 @@
                     }, 10000);
                     event.preventDefault();
                 }
-                ShowMessage("success", "Employee Added Successfully!");
+                else {
+                    ShowMessage("success", "Employee Added Successfully!");
+                }
+                
             });
         });
     </script>
