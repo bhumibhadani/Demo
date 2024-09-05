@@ -60,7 +60,7 @@
                                     <div class="form-group">
                                         @Html.LabelFor(model => model.EmployeeName, "Employee Name")
                                         <span style="color: red;">*</span>
-                                        @Html.TextBoxFor(model => model.EmployeeName, new { @class = "form-control" })
+                                        @Html.TextBoxFor(model => model.EmployeeName, new { @class = "form-control", id = "EmployeeName" })
                                         @Html.ValidationMessageFor(model => model.EmployeeName, "", new { @class = "text-danger", id = "employeeNameError" })
                                     </div>
                                 </div>
@@ -130,23 +130,18 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         @Html.LabelFor(model => model.PhotoPath)
-        @if (!string.IsNullOrEmpty(Model.PhotoPath))
-        {
-            <div>
-                <img src="@Url.Content("~/Content/Images/" + Model.PhotoPath)" alt="Employee Photo" id="photoPreview" style="max-width: 200px; max-height: 200px;" />
-                <input type="hidden" id="PhotoPath" name="PhotoPath" value="@Model.PhotoPath" />
-            </div> }
-        else
-        {
-            <img id="photoPreview" style="max-width: 200px; max-height: 200px;" />
-            <input type="hidden" id="PhotoPath" name="PhotoPath" value="PhotoPath" />}
-        <input type="file" name="Photo" id="photoInput" accept=".png, .jpg, .jpeg" />
-        <span id="photoError" style="color: red; display: none;">Please select a PNG or JPG file.</span>
-        @Html.ValidationMessageFor(model => model.PhotoPath)
-                                        @*<input type="hidden" name="PhotoPath" id="PhotoPath" />
-                                        <input type="file" id="photoInput" name="Photo" accept=".png, .jpg, .jpeg" />
-                                        <img id="photoPreview" src="" alt="Photo Preview" />
-                                        <span id="photoError" style="display:none;"></span>*@
+                                        @*@if (!string.IsNullOrEmpty(Model.PhotoPath))
+                                        {
+                                            <div>
+                                                <img src="@Url.Content("~/Content/Images/" + Model.PhotoPath)" alt="Employee Photo" id="photoPreview" style="max-width: 200px; max-height: 200px;" />
+                                                <input type="hidden" id="PhotoPath" name="PhotoPath" value="@Model.PhotoPath" />
+                                            </div> }
+                                        else
+                                        {
+                                            <input type="hidden" id="PhotoPath" name="PhotoPath" value="PhotoPath" />}*@
+                                        <input type="file" name="Photo" id="photoInput" accept=".png, .jpg, .jpeg" />
+                                        <span id="photoError" style="color: red; display: none;">Please select a PNG or JPG file.</span>
+                                        @Html.ValidationMessageFor(model => model.PhotoPath)
                                     </div>
                                 </div>
 
@@ -231,21 +226,16 @@
 }
 
 @section Scripts {
-    <!-- Include Bootstrap JS (for modal) -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <!-- Optional: Include Popper.js for Bootstrap 4 tooltip positioning -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
-
-    <!-- Datepicker -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-
-    <!-- Other dependencies -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script src="https://printjs.crabbly.com/js/print.js"></script>
-
-    <!-- Custom script -->
     <script src="~/Scripts/Custom/Common.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -277,7 +267,6 @@
             function validateUniqueData() {
                 var isValid = true;
                 var employeeName = $('#EmployeeName').val();
-
                 if (employeeName) {
                     $.ajax({
                         url: '@Url.Action("CheckEmployeeName", "Employee")',
@@ -368,7 +357,7 @@
             //        $('#PhotoPath').val(''); // Clear photo path
             //    }
             //});
-           
+
             $('#photoInput').change(function () {
                 var fileInput = this;
                 var file = fileInput.files[0];
@@ -430,8 +419,16 @@
                 // Validate ContactNo
                 if ($("#ContactNo").val().trim() === "") {
                     isValid = false;
+                    ShowMessage("error", "Contact No is Required!");
                 }
-
+                if ($("#EmployeeName").val().trim() === "") {
+                    isValid = false;
+                    ShowMessage("error", "EmployeeName is Required!");
+                }
+                if ($("#dob").val().trim() === "") {
+                    isValid = false;
+                    ShowMessage("error", "Date of Birth is Required!");
+                }
                 // Show validation modal if form is invalid
                 if (!isValid) {
                     $("#validationModal").modal('show');
@@ -440,6 +437,7 @@
                     }, 10000);
                     event.preventDefault();
                 }
+                ShowMessage("success", "Employee Added Successfully!");
             });
         });
     </script>

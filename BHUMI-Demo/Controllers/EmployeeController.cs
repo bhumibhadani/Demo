@@ -201,7 +201,7 @@ namespace BHUMI_Demo.Controllers
         }
         private string GenerateEmployeeCode()
         {
-            return "EMP" + DateTime.Now.Ticks.ToString().Substring(0, 6);
+            return "EMP" + Guid.NewGuid().ToString().Substring(0, 6).ToUpper();
         }
 
         #region Employee Report
