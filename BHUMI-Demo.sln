@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32630.194
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BHUMI-Demo", "BHUMI-Demo\BHUMI-Demo.csproj", "{3EF3C56F-3BDC-41D7-A48B-C6222441541D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3EF3C56F-3BDC-41D7-A48B-C6222441541D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EF3C56F-3BDC-41D7-A48B-C6222441541D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EF3C56F-3BDC-41D7-A48B-C6222441541D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EF3C56F-3BDC-41D7-A48B-C6222441541D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E71967AB-DAC9-46EB-BC20-339A0FE22569}
+	EndGlobalSection
+EndGlobal

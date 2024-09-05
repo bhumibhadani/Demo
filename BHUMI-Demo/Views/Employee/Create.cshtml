@@ -1,0 +1,446 @@
+﻿@model BHUMI_Demo.Models.Employee
+
+@{
+    ViewBag.Title = ViewBag.IsEdit ? "Edit Employee" : "Create Employee";
+    bool isEdit = ViewBag.IsEdit;
+}
+
+<style>
+    .error-msg {
+        line-height: 1.8;
+    }
+
+    .header-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+        .header-row input {
+            margin-right: 10px;
+        }
+
+        .header-row button {
+            margin-left: 10px;
+        }
+
+    .form {
+        padding-left: 30px;
+    }
+</style>
+
+<h2>@(isEdit ? "Edit Employee" : "Create Employee")</h2>
+
+@using (Html.BeginForm("Create", "Employee", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    @Html.Hidden("isEdit", isEdit)
+
+    @Html.ValidationSummary(true)
+
+    <div class="form">
+        <div class="form-body">
+            <div class="form-group">
+                <div class="card" id="divAutoLSPTemplate">
+                    <div class="card-header" style="padding-bottom:unset!important;">
+                        <div class="row">
+                            <div class="col-md-10">
+                                <!-- Employee Code -->
+                                <div class="col-md-4 offset-md-8">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.EmployeeCode)
+                                        @Html.TextBoxFor(model => model.EmployeeCode, new { @class = "form-control", @readonly = "readonly", placeholder = "System Generated" })
+                                        @Html.ValidationMessageFor(model => model.EmployeeCode)
+                                    </div>
+                                </div>
+
+                                <!-- Employee Name -->
+                                <div class="col-md-4 offset-md-8">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.EmployeeName, "Employee Name")
+                                        <span style="color: red;">*</span>
+                                        @Html.TextBoxFor(model => model.EmployeeName, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.EmployeeName, "", new { @class = "text-danger", id = "employeeNameError" })
+                                    </div>
+                                </div>
+
+                                <!-- Date of Birth -->
+                                <div class="col-md-4 offset-md-8">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.DOB, "Date of Birth")
+                                        <span style="color: red;">*</span>
+                                        @Html.EditorFor(model => model.DOB, new { htmlAttributes = new { @class = "form-control", id = "dob" } })
+                                        @Html.ValidationMessageFor(model => model.DOB, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <!-- Age -->
+                                <div class="col-md-4 offset-md-8">
+                                    <div class="form-group">
+                                        @Html.LabelFor(m => m.Age, "Age")
+                                        @Html.TextBoxFor(m => m.Age, new { @class = "form-control", @readonly = "readonly", id = "age" })
+                                    </div>
+                                </div>
+
+                                <!-- Gender -->
+                                <div class="col-md-4 offset-md-8">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Gender, "Gender")
+                                        @Html.DropDownListFor(
+                                            model => model.Gender,
+                                            new SelectList(
+                                                new[]
+                                                {
+                                                    new { Value = "M", Text = "Male" },
+                                                    new { Value = "F", Text = "Female" },
+                                                    new { Value = "O", Text = "Other" }
+                                                },
+                                                "Value",
+                                                "Text",
+                                                Model.Gender
+                                            ),
+                                            "Select Gender",
+                                            new { @class = "form-control" }
+                                        )
+                                        @Html.ValidationMessageFor(model => model.Gender)
+                                    </div>
+                                </div>
+
+                                <!-- Contact Number -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ContactNo, "Contact Number")
+                                        <span style="color: red;">*</span>
+                                        @Html.TextBoxFor(model => model.ContactNo, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.ContactNo, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <!-- Email -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Email, "Email")
+                                        @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <!-- Photo -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.PhotoPath)
+        @if (!string.IsNullOrEmpty(Model.PhotoPath))
+        {
+            <div>
+                <img src="@Url.Content("~/Content/Images/" + Model.PhotoPath)" alt="Employee Photo" id="photoPreview" style="max-width: 200px; max-height: 200px;" />
+                <input type="hidden" id="PhotoPath" name="PhotoPath" value="@Model.PhotoPath" />
+            </div> }
+        else
+        {
+            <img id="photoPreview" style="max-width: 200px; max-height: 200px;" />
+            <input type="hidden" id="PhotoPath" name="PhotoPath" value="PhotoPath" />}
+        <input type="file" name="Photo" id="photoInput" accept=".png, .jpg, .jpeg" />
+        <span id="photoError" style="color: red; display: none;">Please select a PNG or JPG file.</span>
+        @Html.ValidationMessageFor(model => model.PhotoPath)
+                                        @*<input type="hidden" name="PhotoPath" id="PhotoPath" />
+                                        <input type="file" id="photoInput" name="Photo" accept=".png, .jpg, .jpeg" />
+                                        <img id="photoPreview" src="" alt="Photo Preview" />
+                                        <span id="photoError" style="display:none;"></span>*@
+                                    </div>
+                                </div>
+
+                                <!-- Education Details -->
+                                <div class="col-md-10">
+                                    <div class="form-group">
+                                        @Html.Label("Education Details")
+                                        <table id="educationTable" class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Degree</th>
+                                                    <th>Passing Year</th>
+                                                    <th>Percentage</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (Model.Educations != null && Model.Educations.Any())
+                                                {
+                                                    for (int i = 0; i < Model.Educations.Count; i++)
+                                                    {
+                                                        <tr>
+                                                            <td><input type="text" name="Educations[@i].Degree" value="@Model.Educations[i].Degree" class="form-control" /></td>
+                                                            <td><input type="number" name="Educations[@i].PassingYear" value="@Model.Educations[i].PassingYear" class="form-control" /></td>
+                                                            <td><input type="number" name="Educations[@i].Percentage" value="@Model.Educations[i].Percentage" class="form-control" step="0.01" /></td>
+                                                            <td><button type="button" class="btn btn-danger removeEducation">Remove</button></td>
+                                                        </tr>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <tr>
+                                                        <td><input type="text" name="Educations[0].Degree" class="form-control" /></td>
+                                                        <td><input type="number" name="Educations[0].PassingYear" class="form-control" /></td>
+                                                        <td><input type="number" name="Educations[0].Percentage" class="form-control" step="0.01" /></td>
+                                                        <td><button type="button" class="btn btn-danger removeEducation">Remove</button></td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                        <button type="button" id="addEducation" class="btn btn-success">Add</button>
+                                    </div>
+                                </div>
+
+                                <!-- Submit and Cancel Buttons -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <button type="submit" id="submit" class="btn btn-primary">
+                                            @(isEdit ? "Save" : "Create")
+                                        </button>
+                                        <button type="button" class="btn btn-danger" onclick="window.location.href='@Url.Action("Index", "Employee")'">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="validationModal" tabindex="-1" role="dialog" aria-labelledby="validationModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="validationModalLabel">Validation Error</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Please fill out all mandatory fields before submitting.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <!-- Include Bootstrap JS (for modal) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Optional: Include Popper.js for Bootstrap 4 tooltip positioning -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+
+    <!-- Datepicker -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+    <!-- Other dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://printjs.crabbly.com/js/print.js"></script>
+
+    <!-- Custom script -->
+    <script src="~/Scripts/Custom/Common.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Initialize photo preview
+            var existingPhotoPath = $('#PhotoPath').val();
+            if (existingPhotoPath) {
+                $('#photoPreview').attr('src', '/Content/Images/' + existingPhotoPath);
+            }
+
+            // Add new education row
+            $('#addEducation').click(function () {
+                var educationIndex = $('#educationTable tbody tr').length;
+                var row = `
+                    <tr>
+                        <td><input type="text" name="Educations[${educationIndex}].Degree" class="form-control" /></td>
+                        <td><input type="number" name="Educations[${educationIndex}].PassingYear" class="form-control" /></td>
+                        <td><input type="number" name="Educations[${educationIndex}].Percentage" class="form-control" step="0.01" /></td>
+                        <td><button type="button" class="btn btn-danger removeEducation">Remove</button></td>
+                    </tr>`;
+                $('#educationTable tbody').append(row);
+            });
+
+            // Remove education row
+            $(document).on('click', '.removeEducation', function () {
+                $(this).closest('tr').remove();
+            });
+
+            // Validate unique employee data
+            function validateUniqueData() {
+                var isValid = true;
+                var employeeName = $('#EmployeeName').val();
+
+                if (employeeName) {
+                    $.ajax({
+                        url: '@Url.Action("CheckEmployeeName", "Employee")',
+                        type: 'POST',
+                        data: { employeeName: employeeName },
+                        async: false,
+                        success: function (response) {
+                            if (response.exists) {
+                                $('#EmployeeName').addClass('is-invalid');
+                                $('#employeeNameError').text('Employee Name already exists.');
+                                isValid = false;
+                            } else {
+                                $('#EmployeeName').removeClass('is-invalid');
+                                $('#employeeNameError').text('');
+                            }
+                        }
+                    });
+                }
+
+                return isValid;
+            }
+
+            // Calculate and display age based on DOB
+            $('#dob').change(function () {
+                var dob = new Date($(this).val());
+                var today = new Date();
+                var age = today.getFullYear() - dob.getFullYear();
+                var month = today.getMonth() - dob.getMonth();
+                if (month < 0 || (month === 0 && today.getDate() < dob.getDate())) {
+                    age--;
+                }
+                $('#age').val(age);
+            });
+
+            // Initialize date picker for DOB
+            $("#dob").datepicker({
+                format: 'mm-dd-yyyy',
+                autoclose: true,
+                todayHighlight: true,
+                startDate: '01-01-1900',
+                endDate: new Date()
+            });
+            //$('#photoInput').change(function () {
+            //    var fileInput = this;
+            //    var file = fileInput.files[0];
+            //    var errorSpan = $('#photoError');
+            //    var maxFileSize = 20 * 1024; // 20 KB
+
+            //    if (file) {
+            //        var fileName = file.name.toLowerCase();
+            //        var fileExtension = fileName.split('.').pop();
+            //        var validExtensions = ['png', 'jpg', 'jpeg'];
+
+            //        // Validate file extension
+            //        if (!validExtensions.includes(fileExtension)) {
+            //            errorSpan.text('Please select a PNG or JPG file.');
+            //            errorSpan.show();
+            //            fileInput.value = ''; // Clear invalid file input
+            //            $('#PhotoPath').val(''); // Clear photo path
+            //            $('#photoPreview').attr('src', ''); // Clear photo preview
+            //            return;
+            //        }
+
+            //        // Validate file size
+            //        if (file.size > maxFileSize) {
+            //            errorSpan.text('The file size must be up to 20KB.');
+            //            errorSpan.show();
+            //            fileInput.value = ''; // Clear invalid file input
+            //            $('#PhotoPath').val(''); // Clear photo path
+            //            $('#photoPreview').attr('src', ''); // Clear photo preview
+            //            return;
+            //        }
+
+            //        errorSpan.hide();
+
+            //        // Display photo preview
+            //        var reader = new FileReader();
+            //        reader.onload = function (e) {
+            //            $('#photoPreview').attr('src', e.target.result);
+            //        };
+            //        reader.readAsDataURL(file);
+
+            //        // Set photo path with the file name for form submission
+            //        $('#PhotoPath').val(fileName);
+            //    } else {
+            //        errorSpan.hide();
+            //        $('#photoPreview').attr('src', ''); // Clear photo preview
+            //        $('#PhotoPath').val(''); // Clear photo path
+            //    }
+            //});
+           
+            $('#photoInput').change(function () {
+                var fileInput = this;
+                var file = fileInput.files[0];
+                var errorSpan = $('#photoError');
+                var maxFileSize = 20 * 1024; // 20 KB
+
+                if (file) {
+                    var fileName = file.name.toLowerCase();
+                    var fileExtension = fileName.split('.').pop();
+                    var validExtensions = ['png', 'jpg', 'jpeg'];
+
+                    // Validate file extension
+                    if (!validExtensions.includes(fileExtension)) {
+                        errorSpan.text('Please select a PNG or JPG file.');
+                        errorSpan.show();
+                        fileInput.value = ''; // Clear invalid file input
+                        $('#PhotoPath').val(''); // Clear photo path
+                        $('#photoPreview').attr('src', existingPhotoPath ? '/Content/Images/' + existingPhotoPath : ''); // Reset to existing photo or blank
+                        return;
+                    }
+
+                    // Validate file size
+                    if (file.size > maxFileSize) {
+                        errorSpan.text('The file size must be up to 20KB.');
+                        errorSpan.show();
+                        fileInput.value = ''; // Clear invalid file input
+                        $('#PhotoPath').val(''); // Clear photo path
+                        $('#photoPreview').attr('src', existingPhotoPath ? '/Content/Images/' + existingPhotoPath : ''); // Reset to existing photo or blank
+                        return;
+                    }
+
+                    errorSpan.hide();
+
+                    // Display photo preview
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('#photoPreview').attr('src', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                    console.log("file", file)
+                    // Set photo path with the file name for form submission
+                    $('#PhotoPath').val(fileName);
+                } else {
+                    errorSpan.hide();
+                    $('#photoPreview').attr('src', existingPhotoPath ? '/Content/Images/' + existingPhotoPath : ''); // Reset to existing photo or blank
+                    $('#PhotoPath').val(existingPhotoPath); // Keep existing photo path
+                }
+            });
+            // Form submission validation
+            $("form").on("submit", function (event) {
+                var isValid = true;
+                var isEdit = $("#isEdit").val() === "true";
+
+                // Validate unique data if in edit mode
+                if (isEdit && !validateUniqueData()) {
+                    isValid = false;
+                }
+
+                // Validate ContactNo
+                if ($("#ContactNo").val().trim() === "") {
+                    isValid = false;
+                }
+
+                // Show validation modal if form is invalid
+                if (!isValid) {
+                    $("#validationModal").modal('show');
+                    setTimeout(function () {
+                        $("#validationModal").modal('hide');
+                    }, 10000);
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+}

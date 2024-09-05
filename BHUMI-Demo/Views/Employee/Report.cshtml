@@ -1,0 +1,34 @@
+﻿@model IEnumerable<BHUMI_Demo.Models.Employee>
+
+@{ ViewBag.Title = "Employee Report"; }
+
+<h2>Employee Report</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Employee Code</th>
+            <th>Employee Name</th>
+            <th>DOB</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>ContactNo</th>
+            <th>Email</th>
+            <th>CreatedAt</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var employee in Model)
+        {
+        <tr>
+            <td>@employee.EmployeeCode</td>
+            <td>@employee.EmployeeName</td>
+            <td>@employee.DOB.ToString("yyyy-MM-dd")</td>
+            <td>@employee.Age</td>
+            <td>@employee.Gender</td>
+            <td>@employee.ContactNo</td>
+            <td>@employee.Email</td>
+            <td>@employee.CreatedAt.ToString("yyyy-MM-dd")</td>
+        </tr>}
+    </tbody>
+</table>
